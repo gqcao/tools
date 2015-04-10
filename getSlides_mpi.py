@@ -21,9 +21,9 @@ def master():
 	folder_name = "ir" 
 	command = "mkdir " + folder_name # create a new folder
 	# Open your site
-	br.open('http://web.stanford.edu/class/cs276/handouts/')
+	br.open('http://www.stat.cmu.edu/~larry/=stat705/')
 
-	suffix = ["-1-per.pdf"] #you will need to do some kind of pattern matching on your files
+	suffix = ["homework", "Solutions"] #you will need to do some kind of pattern matching on your files
 	myfiles = []
 	for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
 		for t in suffix:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 	# print myfiles
 	# readNames()
 	# subprocess.call("cd ~/bash_code; sh pltr_batch2.sh", shell=True)   
-	folder_name = "ir" 
+	folder_name = "/homeappl/home/gcao/AllOfStatistics/" 
         myrank = comm.Get_rank()
         if myrank == 0:
                 master()
