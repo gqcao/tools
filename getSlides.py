@@ -32,23 +32,25 @@ def readNames():      # general function to parse tab-delimited floats
 if __name__ == '__main__':
 	br = mechanize.Browser()
 	# Open your site
-	br.open('http://www.cs.princeton.edu/~wayne/kleinberg-tardos/')
+        br.open('http://www.deeplearningbook.org/')
 	# f=open("source.html","w")
 	# f.write(br.response().read()) # can be helpful for debugging maybe
 
-	suffix = ["-2x2.pdf"] #you will need to do some kind of pattern matching on your files
+	suffix = [".html"] #you will need to do some kind of pattern matching on your files
+        exception = "index.html" # Set an exception filename 
+	#suffix = ["-2x2.pdf"] #you will need to do some kind of pattern matching on your files
 	myfiles = []
 	for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
-		for t in suffix:
-			if t in str(l): 
-				myfiles.append(l)
+            for t in suffix:
+                if t in str(l) and str(l)[-10:] != exception: 
+                    myfiles.append(l)
 	# print myfiles
 	for l in myfiles:
-		m sleep(5) #throttle so you dont hammer the site
+		sleep(5) #throttle so you dont hammer the site
 		# downloadlink(l)
 		# print l.base_url
-		command = "cd algorithm; wget " + l.base_url + l.url 
+		command = "cd dl_book; wget " + l.base_url + l.url 
 		subprocess.call(command, shell=True)
-		print "Downloaded" + l.url 
+		print "Downloaded " + l.url 
 	# readNames()
 	# subprocess.call("cd ~/bash_code; sh pltr_batch2.sh", shell=True)    

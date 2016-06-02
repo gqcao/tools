@@ -10,5 +10,5 @@
 
 # module swap intel/13.1.0 gcc/4.8.2
 module load intelmpi/4.1.0 
-cd ~/tools
+cd ~/misc/tools
 srun ./getSlides_mpi.py 

@@ -19,14 +19,14 @@ def master():
     print "master"
     br = mechanize.Browser()
     # Open your site
-    br.open('https://www.kaggle.com/c/dato-native/data')
-    suffix = ["zip"] #you will need to do some kind of pattern matching on your files
+    br.open('http://yann.lecun.com/ex/music/index.html')
+    suffix = ["mp3"] #you will need to do some kind of pattern matching on your files
     myfiles = []
     for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
         for t in suffix:
             if t in str(l):
                 myfiles.append(l)
-    print(myfiles)
+    #print(myfiles)
     ntasks = comm.Get_size();
     ntasks_ = ntasks - 1
     if ntasks_ >= len(myfiles):
@@ -43,20 +43,20 @@ def master():
                 links = myfiles[rem + i  * (len(myfiles) / ntasks_):rem + (i + 1) * (len(myfiles) / ntasks_) ]
                 comm.send(links, i + 1, tag=11)
 
-
 def slave(folder_name):
     print "slave -gelen"
     links = comm.recv(source=0,tag = 11)
-    #base = 'https://www.youtube.com/playlist?'
+    base = 'http://yann.lecun.com/ex/music/'
     # sleep(5) #throttle so you dont hammer the site
     for l in links:
-        command = "cd "+ folder_name +"; wget " + l.base_url + l.url
+        command = "cd "+ folder_name +"; wget " + base + l.url
+        #command = "cd "+ folder_name +"; wget " + l.base_url + l.url
         #command = "cd "+ folder_name + "; ./youtube-dl --extract-audio --audio-format mp3 " + base + l.url.split('&')[1]
         subprocess.call(command, shell=True)
-        print "Downloaded " + l.base_url + l.url
+        print "Downloaded " + base + l.url
 
 if __name__ == '__main__':
-    folder_name = "/homeappl/home/gcao/Dataset2/Dato/"
+    folder_name = "~/misc/music/jazz/"
     myrank = comm.Get_rank()
     if myrank == 0:
         master()
