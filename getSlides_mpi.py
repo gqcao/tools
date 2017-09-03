@@ -19,7 +19,7 @@ def master():
     print "master"
     br = mechanize.Browser()
     # Open your site
-    br.open('http://yann.lecun.com/ex/music/index.html')
+    br.open('http://statweb.stanford.edu/~tibs/music.html')
     suffix = ["mp3"] #you will need to do some kind of pattern matching on your files
     myfiles = []
     for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
@@ -46,7 +46,7 @@ def master():
 def slave(folder_name):
     print "slave -gelen"
     links = comm.recv(source=0,tag = 11)
-    base = 'http://yann.lecun.com/ex/music/'
+    base = 'http://statweb.stanford.edu/~tibs/'
     # sleep(5) #throttle so you dont hammer the site
     for l in links:
         command = "cd "+ folder_name +"; wget " + base + l.url
@@ -56,7 +56,7 @@ def slave(folder_name):
         print "Downloaded " + base + l.url
 
 if __name__ == '__main__':
-    folder_name = "~/misc/music/jazz/"
+    folder_name = "~/misc/music/piano/"
     myrank = comm.Get_rank()
     if myrank == 0:
         master()
