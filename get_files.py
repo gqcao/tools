@@ -32,28 +32,28 @@ def readNames():      # general function to parse tab-delimited floats
     return chapters
 
 if __name__ == '__main__':
-    root_path = "/home/gcao/hr/"
+    root_path = "/home/gcao/mit_dl/"
     br = mechanicalsoup.StatefulBrowser()
     # Open your site
-    br.open("https://mp.weixin.qq.com/s/oOYGa4Mti6KpkpI4TtpitQ")
+    br.open("https://people.csail.mit.edu/madry/6.883/")
     #br.open("http://www.comp.nus.edu.sg/~whitebal/illuminant/illuminant.html")
     # f=open("source.html","w")
     # f.write(br.response().read()) # can be helpful for debugging maybe
 
-    suffix = [".jpeg"] #you will need to do some kind of pattern matching on your files
+    suffix = [".pdf"] #you will need to do some kind of pattern matching on your files
     myfiles = []
     for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
         for t in suffix:
             if t in str(l): 
                 myfiles.append(l)
-    # print myfiles
+    #print(myfiles)
     base_url = br.get_url() 
     #base_url = re.sub('lecture_slides.html', '', br.get_url())
     for l in myfiles:
         # sleep(5) #throttle so you dont hammer the site
         # downloadlink(l)
-        command = "cd "+ root_path +"; " +  "wget " + l.attrs['href']
-        #command = "cd "+ root_path +"; " +  "wget " + base_url + l.attrs['href']
+        #command = "cd "+ root_path +"; " +  "wget " + l.attrs['href']
+        command = "cd "+ root_path +"; " +  "wget " + base_url + l.attrs['href']
         subprocess.call(command, shell=True)
         print("Downloaded " + l.attrs['href'])
         print(l.text)
