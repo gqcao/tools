@@ -32,21 +32,17 @@ def readNames():      # general function to parse tab-delimited floats
     return chapters
 
 if __name__ == '__main__':
-    root_path = "/home/gcao/mit_dl/"
+    root_path = "/home/gcao/tmp/"
     br = mechanicalsoup.StatefulBrowser()
     # Open your site
-    br.open("https://people.csail.mit.edu/madry/6.883/")
-    #br.open("http://www.comp.nus.edu.sg/~whitebal/illuminant/illuminant.html")
-    # f=open("source.html","w")
-    # f.write(br.response().read()) # can be helpful for debugging maybe
-
-    suffix = [".pdf"] #you will need to do some kind of pattern matching on your files
+    br.open("http://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/")
+    suffix = [".xlsx"] #you will need to do some kind of pattern matching on your files
     myfiles = []
+    print(br.links())
     for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
         for t in suffix:
             if t in str(l): 
                 myfiles.append(l)
-    #print(myfiles)
     base_url = br.get_url() 
     #base_url = re.sub('lecture_slides.html', '', br.get_url())
     for l in myfiles:
