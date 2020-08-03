@@ -1,5 +1,5 @@
 # Some useful tools to automate my workflow 
-Created by Guanqun Cao
+Created by Guanqun Cao <br/>
 Last update on Aug 3, 2020
 
 ## Included task:
