@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: continuumio/miniconda
+Stage: build
+
+%environment
+    export PATH=/opt/conda/bin:$PATH
+
+%post
+    /opt/conda/bin/conda install geopandas requests 

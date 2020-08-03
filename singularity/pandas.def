@@ -1,0 +1,17 @@
+Bootstrap: docker
+From: continuumio/miniconda
+Stage: build
+
+%environment
+    export PATH=/conda/bin:$PATH
+
+%post
+    mv /opt/conda /
+    sed -i '1s/.*/\#\!\/conda\/bin\/python/' /conda/bin/conda
+
+%post
+    rm /etc/profile.d/conda.sh
+    ln -s /conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+    /conda/bin/conda install python=3.8 pandas requests 
