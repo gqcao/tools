@@ -7,14 +7,14 @@ from pdb import set_trace
 import re
 
 if __name__ == '__main__':
-    root_path = "/home/gcao/lectures/bayes_filter/"
+    root_path = "/home/gcao/lectures/automation_system/"
     br = mechanicalsoup.StatefulBrowser()
     # Open your site
-    br.open("https://mycourses.aalto.fi/course/view.php?id=24745&section=2")
-    prefix = ["https://mycourses.aalto.fi/mod/resource/view.php?id="]
+    br.open("https://mycourses.aalto.fi/course/view.php?id=28582&section=1")
+    suffix = [".pdf"]
     myfiles = []
     for l in br.links(): #you can also iterate through br.forms() to print forms on the page!
-        for t in prefix:
+        for t in suffix:
             if t in str(l): 
                 myfiles.append(l)
     base_url = br.get_url() 
