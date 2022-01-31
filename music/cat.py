@@ -4,8 +4,8 @@ sys.path.insert(0, '/home/gcao/Projects/retrieval/misc')
 from fileproc import loadstr, writestr
 
 def writeList():
-    root_path = '/home/gcao/bash_cmd/mp3/'
-    filenames = loadstr('mylist.txt')
+    root_path = '/home/gcao/bash_cmd/music/'
+    filenames = loadstr(root_path + 'mylist.txt')
     lst = []
     for f in filenames:
         lst.append('file ' + '\'' + root_path + f + '\'')
