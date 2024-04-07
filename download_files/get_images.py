@@ -1,22 +1,21 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-from pdb import set_trace
 import subprocess
 
-root_path = '/home/gcao/tmp/slides'
-site = "https://auto.gasgoo.com/news/202205/23I70301923C601.shtml"
+root_path = '/home/gcao/tmp/pics'
+site = "https://yle.fi/a/74-20082473"
 
 response = requests.get(site)
 
 soup = BeautifulSoup(response.text, 'html.parser')
 img_tags = soup.find_all('img')
 urls = []
+yle_base_url = "https://images.cdn.yle.fi/image/upload/"
 for img in img_tags:
-    if img.has_attr('data-src'):
-        urls.append(img['data-src'])
+    if img.has_attr('src'):
+        urls.append(yle_base_url + img['src'].split("/")[-1])
 cnt = 0
-set_trace()
 for url in urls:
     # sleep(5) #throttle so you dont hammer the site
     # downloadlink(l)

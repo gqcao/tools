@@ -21,7 +21,7 @@ screen_height   = 1080   # target height
 def rename_imgs():
     for idx, file in enumerate(os.listdir(wrk_dir)):
         ext = file.split(".")[1]
-        os.rename(wrk_dir + file, str(start_idx + idx).zfill(2) + "." + ext)
+        os.rename(wrk_dir + file, wrk_dir + str(start_idx + idx).zfill(2) + "." + ext)
 
 def pad_img(img_name, target_color):
     cmd = "convert " + img_name + " -background " + target_color + " -gravity center -extent " + str(screen_width) + "x" + str(screen_height) + " " + img_name
@@ -46,5 +46,6 @@ def resize_imgs():
         pad_img(file, "white")
 
 if __name__ == "__main__":
+    rename_imgs()
     resize_imgs()
 
