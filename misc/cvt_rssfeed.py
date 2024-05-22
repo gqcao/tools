@@ -2,12 +2,18 @@
 
 import numpy as np
 import re
+import sys
 
 def get_line_indent(line):
     """Returns the number of leading spaces in a line."""
     return len(line) - len(line.lstrip())
 
-file_path = 'rss_20240221.xml'
+if len(sys.argv) < 2:
+    print("Please provide a filename as a command-line argument.")
+else:
+    file_path = sys.argv[1]
+    print("Reading file:", file_path)
+
 curr_tag = ""
 pattern = r'(\w+)\s*=\s*"([^"]+)"'
 urls= []
