@@ -30,7 +30,8 @@ with open(file_path, 'r') as file:
         if indent == 4 and content.get("title") is not None:
             curr_tag = content["title"]
         if content.get("xmlUrl"):
-            urls.append(content.get("xmlUrl") + " " + curr_tag)
+            url = content.get("xmlUrl").replace("amp;", "")
+            urls.append(url + " " + '"{}"'.format(curr_tag))
 
 wrt_file_path = 'urls'
 
