@@ -1,6 +1,6 @@
 import requests
 from tqdm import tqdm
-
+import sys
 
 # load text one line at a time..
 def loadstr(filename,converter=str):
@@ -54,6 +54,7 @@ def get_all_paper_links(paper_names):
     return alphaxiv_list
 
 if __name__ == "__main__":
-    paper_names = loadstr("paperlist.txt", converter=str)
+    filename = sys.argv[1]
+    paper_names = loadstr(filename, converter=str)
     alphaxiv_list = get_all_paper_links(paper_names)
     gen_markdown(paper_names, alphaxiv_list)
