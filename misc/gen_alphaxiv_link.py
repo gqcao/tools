@@ -1,6 +1,9 @@
 import requests
 from tqdm import tqdm
 import sys
+import os
+import re
+from pdb import set_trace
 
 # load text one line at a time..
 def loadstr(filename,converter=str):
@@ -34,21 +37,34 @@ def fetch_alphaxiv_link(paper_title):
         print("Paper not found on arXiv")
         return None
 
-def gen_markdown(paper_names, alphaxiv_list):
+def remove_arxiv_if_exists(paper_name):
+    file_path = os.environ.get("HOME")  + "/Dropbox/papers/" + paper_name
+    if os.path.isfile(file_path):
+        try:
+            # Remove the file
+            os.remove(file_path)
+            print(f"File '{file_path}' has been removed.")
+        except Exception as e:
+            print(f"Error removing file: {e}")
+
+def gen_markdown(paper_names, alphaxiv_list, filename):
     texts = []
     for i in range(len(paper_names)):
         if alphaxiv_list[i] is None:
-            texts.append("- " + paper_names[i])
+            line = "- [" + paper_names[i] + "]" + "("+ os.environ.get("HOME")  + "/Dropbox/papers/" + paper_names[i] + ")"
+            texts.append(line)
         else:
             line = "- [" + paper_names[i] + "]" + "(" + alphaxiv_list[i] + ")"
             texts.append(line)
-    writestr("all_papers.md", texts)
+            remove_arxiv_if_exists(paper_names[i])
+    writestr(filename.split('.')[0] + ".md", texts)
 
 def get_all_paper_links(paper_names):
     alphaxiv_list = []
     for paper in tqdm(paper_names, total=len(paper_names), desc="Fetch links"):
-        if "]" in paper:
-            paper = paper[paper.index(']')+1:paper.index('.')]
+        paper = paper.rstrip(".pdf")
+        paper = re.findall(r'\b[a-zA-Z]+\b', paper)
+        paper = ' '.join(paper)
         alphaxiv_id = fetch_alphaxiv_link(paper)
         alphaxiv_list.append(alphaxiv_id)
     return alphaxiv_list
@@ -57,4 +73,4 @@ if __name__ == "__main__":
     filename = sys.argv[1]
     paper_names = loadstr(filename, converter=str)
     alphaxiv_list = get_all_paper_links(paper_names)
-    gen_markdown(paper_names, alphaxiv_list)
+    gen_markdown(paper_names, alphaxiv_list, filename)
