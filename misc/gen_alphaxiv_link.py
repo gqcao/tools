@@ -63,9 +63,12 @@ def get_all_paper_links(paper_names):
     alphaxiv_list = []
     for paper in tqdm(paper_names, total=len(paper_names), desc="Fetch links"):
         paper = paper.rstrip(".pdf")
-        paper = re.findall(r'\b[a-zA-Z]+\b', paper)
-        paper = ' '.join(paper)
-        alphaxiv_id = fetch_alphaxiv_link(paper)
+        if "arXiv" in paper:
+            alphaxiv_id = "http://alphaxiv.org/abs/" + paper[paper.index('_')+1:]
+        else:
+            paper = re.findall(r'\b[a-zA-Z]+\b', paper)
+            paper = ' '.join(paper)
+            alphaxiv_id = fetch_alphaxiv_link(paper)
         alphaxiv_list.append(alphaxiv_id)
     return alphaxiv_list
 
