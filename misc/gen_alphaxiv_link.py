@@ -3,7 +3,8 @@ from tqdm import tqdm
 import sys
 import os
 import re
-from pdb import set_trace
+import subprocess
+
 
 # load text one line at a time..
 def loadstr(filename,converter=str):
@@ -47,7 +48,7 @@ def remove_arxiv_if_exists(paper_name):
         except Exception as e:
             print(f"Error removing file: {e}")
 
-def gen_markdown(paper_names, alphaxiv_list, filename):
+def gen_markdown(paper_names, alphaxiv_list, filename_stem):
     texts = []
     for i in range(len(paper_names)):
         if alphaxiv_list[i] is None:
@@ -57,7 +58,7 @@ def gen_markdown(paper_names, alphaxiv_list, filename):
             line = "- [" + paper_names[i] + "]" + "(" + alphaxiv_list[i] + ")"
             texts.append(line)
             remove_arxiv_if_exists(paper_names[i])
-    writestr(filename.split('.')[0] + ".md", texts)
+    writestr(filename_stem + ".md", texts)
 
 def get_all_paper_links(paper_names):
     alphaxiv_list = []
@@ -72,8 +73,14 @@ def get_all_paper_links(paper_names):
         alphaxiv_list.append(alphaxiv_id)
     return alphaxiv_list
 
+def gen_html(filename_stem):
+    cmd = "pandoc  --css style.css -s -o " + filename_stem + ".html " + filename_stem + ".md"
+    subprocess.call(cmd, shell=True)
+
 if __name__ == "__main__":
     filename = sys.argv[1]
+    filename_stem = filename.split('.')[0]
     paper_names = loadstr(filename, converter=str)
     alphaxiv_list = get_all_paper_links(paper_names)
-    gen_markdown(paper_names, alphaxiv_list, filename)
+    gen_markdown(paper_names, alphaxiv_list, filename_stem)
+    gen_html(filename_stem)
