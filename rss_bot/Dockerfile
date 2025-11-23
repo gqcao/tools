@@ -21,9 +21,9 @@ RUN chmod +x update_rss.sh
 RUN git config --global user.email "rssbot@example.com" && \
     git config --global user.name "rssbot"
 
-# Create crontab entry (every 10 minutes)
-# RUN echo '*/10 * * * * cd /app && ./update_rss.sh' > /etc/crontab
+# Create crontab entry (every 1 hour / 10 minutes)
 RUN echo '0 * * * * cd /app && ./update_rss.sh' > /etc/crontab
+# RUN echo '*/10 * * * * cd /app && ./update_rss.sh' > /etc/crontab
 
 # Start supercronic
 CMD ["supercronic", "/etc/crontab"]
