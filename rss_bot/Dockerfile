@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 # Install dependencies
-RUN apk add --no-cache curl git
+RUN apk add --no-cache tini curl git
 
 # Install supercronic
 RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64 \
@@ -24,6 +24,9 @@ RUN git config --global user.email "rssbot@example.com" && \
 # Create crontab entry (every 1 hour / 10 minutes)
 RUN echo '0 * * * * cd /app && ./update_rss.sh' > /etc/crontab
 # RUN echo '*/10 * * * * cd /app && ./update_rss.sh' > /etc/crontab
+
+# Clean zombie processes
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start supercronic
 CMD ["supercronic", "/etc/crontab"]

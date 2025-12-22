@@ -14,4 +14,4 @@ curl -s https://techcrunch.com/category/startups/feed/ -o channels/techcrunch_st
 # Git operations
 git add .
 git commit -m "Update RSS feeds - $(date)"
-git push https://$GITHUB_TOKEN@github.com/gqcao/rss_bot.git main
+git push --quiet https://${GITHUB_TOKEN}@github.com/gqcao/rss_bot.git main >/dev/null 2>&1
