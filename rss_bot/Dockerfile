@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 # Install dependencies
-RUN apk add --no-cache tini curl git
+RUN apk add --no-cache python3 py3-requests tini curl git
 
 # Install supercronic
 RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64 \
