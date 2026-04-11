@@ -7,8 +7,9 @@
 # 28/03/2024
 #------------------------------------------------------------------------------#
 
+import argparse
 import numpy
-import os 
+import os
 import subprocess
 import cv2
 
@@ -18,16 +19,16 @@ wrk_dir         = "pics/"
 screen_width    = 1920   # target width
 screen_height   = 1080   # target height
 
-def rename_imgs():
+def rename_imgs(start_num):
     for idx, file in enumerate(os.listdir(wrk_dir)):
         ext = file.split(".")[1]
-        os.rename(wrk_dir + file, wrk_dir + str(start_idx + idx).zfill(2) + "." + ext)
+        os.rename(wrk_dir + file, wrk_dir + str(start_num + idx).zfill(2) + "." + ext)
 
 def pad_img(img_name, target_color):
     cmd = "convert " + img_name + " -background " + target_color + " -gravity center -extent " + str(screen_width) + "x" + str(screen_height) + " " + img_name
     subprocess.call(cmd, shell=True)
 
-def resize_imgs():
+def resize_imgs(target_color):
     for idx, file in enumerate(os.listdir(wrk_dir)):
         curr_image = cv2.imread(wrk_dir + file)
         curr_height, curr_width, _ = curr_image.shape
@@ -43,9 +44,14 @@ def resize_imgs():
             new_width = int(curr_width * perc)
             new_image = cv2.resize(curr_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
             cv2.imwrite(file, new_image)
-        pad_img(file, "white")
+        pad_img(file, target_color)
 
 if __name__ == "__main__":
-    rename_imgs()
-    resize_imgs()
+    parser = argparse.ArgumentParser(description="Process desktop wallpapers")
+    parser.add_argument("-c", "--color", type=str, default="white", help="Background color for padding (default: white)")
+    parser.add_argument("-n", "--number", type=int, default=start_idx, help="Starting number for image renaming (default: 21)")
+    args = parser.parse_args()
+
+    rename_imgs(args.number)
+    resize_imgs(args.color)
 
