@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from datetime import datetime
 import sys
+import argparse
 import requests
 
 def fetch_markdown_from_url(url: str) -> str:
@@ -89,27 +90,26 @@ def parse_markdown_to_rss(md_content: str, channel_title: str = "Communications 
     return reparsed.toprettyxml(indent="  ")
 
 if __name__ == "__main__":
-    # URL to fetch markdown content from
-    url = "https://r.jina.ai/https://cacm.acm.org/issue/latest/feed"
-    
+    parser = argparse.ArgumentParser(description="Fetch markdown from an RSS feed via Jina AI and convert to RSS XML.")
+    parser.add_argument("-s", type=str, required=True, help="The RSS URL to fetch markdown content from (e.g., https://cacm.acm.org/section/news/feed)")
+    parser.add_argument("-o", type=str, required=True, help="The output XML file path (e.g., channels/cacm_magazine.xml)")
+    args = parser.parse_args()
+
+    url = f"https://r.jina.ai/{args.s}"
+
     print(f"Fetching content from {url}...")
     markdown_content = fetch_markdown_from_url(url)
-    
+
     if not markdown_content:
         print("No content fetched.")
         sys.exit(1)
-        
+
     print("Parsing content and generating RSS feed...")
     rss_output = parse_markdown_to_rss(markdown_content)
-    
-    # Print to console
-    # print(rss_output)
-    
-    # Optional: Save to an XML file
-    output_filename = "./channels/cacm_feed.xml"
+
     try:
-        with open(output_filename, 'w', encoding='utf-8') as f:
+        with open(args.o, 'w', encoding='utf-8') as f:
             f.write(rss_output)
-        print(f"\nRSS feed saved to {output_filename}")
+        print(f"\nRSS feed saved to {args.o}")
     except Exception as e:
         print(f"Error saving file: {e}")
