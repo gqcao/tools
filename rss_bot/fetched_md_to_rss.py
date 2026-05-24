@@ -5,21 +5,45 @@ from datetime import datetime
 import sys
 import argparse
 import requests
+import time
 
-def fetch_markdown_from_url(url: str) -> str:
+def fetch_markdown_from_url(url: str, max_retries: int = 5, retry_delay: int = 3) -> str:
     """
-    Fetches markdown content from the specified URL.
+    Fetches markdown content from the specified URL with retry logic.
+    Retries if the response contains CAPTCHA/blocked page indicators.
     """
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        return response.text
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching URL: {e}")
-        sys.exit(1)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            print(f"Fetching content from {url} (attempt {attempt}/{max_retries})...")
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            text = response.text
+
+            # Check if the response is a CAPTCHA/blocked page
+            if "Just a moment..." in text or "Please confirm" in text or "CAPTCHA" in text:
+                print(f"Warning: Received blocked/CAPTCHA page on attempt {attempt}.")
+                if attempt < max_retries:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print("Error: All retries exhausted. Target URL is blocking the request.")
+                    sys.exit(1)
+
+            return text
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching URL (attempt {attempt}/{max_retries}): {e}")
+            if attempt < max_retries:
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+            else:
+                print("Error: All retries exhausted.")
+                sys.exit(1)
 
 def parse_markdown_to_rss(md_content: str, channel_title: str = "Communications of the ACM", channel_link: str = "https://cacm.acm.org/", channel_description: str = "Latest articles from Communications of the ACM") -> str:
     """
@@ -93,12 +117,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch markdown from an RSS feed via Jina AI and convert to RSS XML.")
     parser.add_argument("-s", type=str, required=True, help="The RSS URL to fetch markdown content from (e.g., https://cacm.acm.org/section/news/feed)")
     parser.add_argument("-o", type=str, required=True, help="The output XML file path (e.g., channels/cacm_magazine.xml)")
+    parser.add_argument("--retries", type=int, default=5, help="Maximum number of retry attempts (default: 5)")
+    parser.add_argument("--delay", type=int, default=3, help="Delay in seconds between retries (default: 3)")
     args = parser.parse_args()
 
     url = f"https://r.jina.ai/{args.s}"
 
-    print(f"Fetching content from {url}...")
-    markdown_content = fetch_markdown_from_url(url)
+    markdown_content = fetch_markdown_from_url(url, max_retries=args.retries, retry_delay=args.delay)
 
     if not markdown_content:
         print("No content fetched.")
