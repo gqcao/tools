@@ -5,5 +5,5 @@ docker build -t rss-bot .
 
 ## Run with token
 ```
-docker run -d -e GITHUB_TOKEN=$GITHUB_TOKEN rss-bot
+docker run --restart always -d -e GITHUB_TOKEN=$GITHUB_TOKEN rss-bot
 ```
