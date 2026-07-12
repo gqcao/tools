@@ -13,6 +13,7 @@ python subscribe_vava8.py   # Output is vava8_feed.xml
 curl -s https://techcrunch.com/feed/ -o channels/techcrunch.xml
 curl -s https://techcrunch.com/category/startups/feed/ -o channels/techcrunch_startups.xml
 curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" https://www.efinancialcareers.com/feed/syndication/rss.xml -o channels/eficareers.xml
+curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "https://supsub.net/feed/public/4aa39991/rss" -o channels/zpotentials.xml
 
 # Git operations
 git add .
