@@ -7,7 +7,6 @@ cd "$(dirname "$0")"
 mkdir -p channels
 
 # Download RSS feeds
-python fetched_md_to_rss.py -s https://cacm.acm.org/issue/latest/feed -o channels/cacm_magazine.xml
 python fetched_md_to_rss.py -s https://cacm.acm.org/feed -o channels/cacm_all.xml
 python subscribe_vava8.py   # Output is vava8_feed.xml
 curl -s https://techcrunch.com/feed/ -o channels/techcrunch.xml
