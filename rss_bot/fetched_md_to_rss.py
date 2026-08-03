@@ -4,46 +4,45 @@ from xml.dom import minidom
 from datetime import datetime
 import sys
 import argparse
-import requests
 import time
+import urllib.error
+import urllib.request
 
 def fetch_markdown_from_url(url: str, max_retries: int = 5, retry_delay: int = 3) -> str:
     """
     Fetches markdown content from the specified URL with retry logic.
     Retries if the response contains CAPTCHA/blocked page indicators.
     """
+    # r.jina.ai is fronted by Cloudflare.  Its challenge page can be
+    # triggered by old, highly specific browser UAs (such as Chrome 91).
+    # This generic UA is accepted by the endpoint and does not pretend to be
+    # a browser version that may have an inconsistent fingerprint.
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0',
+        'Accept': 'text/plain, */*',
     }
 
     for attempt in range(1, max_retries + 1):
         try:
             print(f"Fetching content from {url} (attempt {attempt}/{max_retries})...")
-            response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-            text = response.text
+            request = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(request, timeout=20) as response:
+                text = response.read().decode(response.headers.get_content_charset() or 'utf-8')
 
-            # Check if the response is a CAPTCHA/blocked page
-            if "Just a moment..." in text or "Please confirm" in text or "CAPTCHA" in text:
-                print(f"Warning: Received blocked/CAPTCHA page on attempt {attempt}.")
-                if attempt < max_retries:
-                    print(f"Retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    print("Error: All retries exhausted. Target URL is blocking the request.")
-                    sys.exit(1)
+            # Check if the response is a CAPTCHA/blocked page.
+            if ("Just a moment..." in text or "Please confirm" in text or
+                    "CAPTCHA" in text or "cf-mitigated" in text):
+                raise RuntimeError("received a CAPTCHA/blocked page")
 
             return text
 
-        except requests.exceptions.RequestException as e:
+        except (urllib.error.URLError, urllib.error.HTTPError, RuntimeError) as e:
             print(f"Error fetching URL (attempt {attempt}/{max_retries}): {e}")
             if attempt < max_retries:
                 print(f"Retrying in {retry_delay} seconds...")
                 time.sleep(retry_delay)
             else:
-                print("Error: All retries exhausted.")
-                sys.exit(1)
+                raise RuntimeError("All retries exhausted while fetching the URL") from e
 
 def parse_markdown_to_rss(md_content: str, channel_title: str = "Communications of the ACM", channel_link: str = "https://cacm.acm.org/", channel_description: str = "Latest articles from Communications of the ACM") -> str:
     """
